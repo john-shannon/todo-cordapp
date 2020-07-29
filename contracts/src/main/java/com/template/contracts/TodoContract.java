@@ -32,6 +32,13 @@ public class TodoContract implements Contract {
 
                 return null;
             });
+        } else if (commandData.equals(new Commands.Assign())) {
+            requireThat(require -> {
+                require.using("Only one input should be consumed when issuing a TODO.", tx.getInputStates().size() == 1);
+                require.using( "Only one output state should be created when issuing a TODO.", tx.getOutputStates().size() == 1);
+
+                return null;
+            });
         }
     }
 }

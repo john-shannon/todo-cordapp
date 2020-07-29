@@ -44,4 +44,8 @@ public class TodoState implements LinearState {
         return Arrays.asList(assignedBy, assignedTo);
     }
 
+    public TodoState withNewAssignedTo(Party toAssign) {
+        return new TodoState(assignedBy, toAssign, taskDescription, dateOfCreation, linearId);
+    }
+
 }
