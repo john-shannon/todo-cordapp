@@ -41,7 +41,7 @@ public class TodoState implements LinearState {
 
     @Override
     public List<AbstractParty> getParticipants() {
-        return Arrays.asList();
+        return Arrays.asList(assignedBy, assignedTo);
     }
 
 }
