@@ -22,14 +22,16 @@ public class TodoState implements LinearState {
     private Party assignedTo;
     private String taskDescription;
     private String dateOfCreation;
+    private String deadlineDate;
     private UniqueIdentifier linearId;
 
 
-    public TodoState(Party assignedBy, Party assignedTo, String taskDescription, String dateOfCreation, UniqueIdentifier linearId) {
+    public TodoState(Party assignedBy, Party assignedTo, String taskDescription, String dateOfCreation, String deadlineDate, UniqueIdentifier linearId) {
         this.assignedBy = assignedBy;
         this.assignedTo = assignedTo;
         this.taskDescription = taskDescription;
         this.dateOfCreation = dateOfCreation;
+        this.deadlineDate = deadlineDate;
         this.linearId = linearId;
     }
 
@@ -37,6 +39,7 @@ public class TodoState implements LinearState {
     public Party getAssignedTo() { return assignedTo; }
     public String getTaskDescription() { return taskDescription; }
     public String getDateOfCreation() { return dateOfCreation; }
+    public String getDeadlineDate() { return deadlineDate; }
     @Override public UniqueIdentifier getLinearId() { return linearId; }
 
     @Override
@@ -44,8 +47,12 @@ public class TodoState implements LinearState {
         return Arrays.asList(assignedBy, assignedTo);
     }
 
-    public TodoState withNewAssignedTo(Party toAssign) {
-        return new TodoState(assignedBy, toAssign, taskDescription, dateOfCreation, linearId);
+    public TodoState withNewAssignedToAndDeadline(Party toAssign, String deadline) {
+        return new TodoState(assignedBy, toAssign, taskDescription, dateOfCreation, deadline, linearId);
+    }
+
+    public String toString() {
+        return String.format("%s -- %s - %s - %s - %s - %s", linearId, assignedBy, assignedTo, taskDescription, dateOfCreation, deadlineDate);
     }
 
 }

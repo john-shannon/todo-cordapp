@@ -55,7 +55,7 @@ public class TodoCreate extends FlowLogic<SignedTransaction> {
 
         UniqueIdentifier linearId = new UniqueIdentifier();
 
-        TodoState todoState = new TodoState(me, assignedToIdentity, taskDescription, dateOfCreation, linearId);
+        TodoState todoState = new TodoState(me, assignedToIdentity, taskDescription, dateOfCreation, "", linearId);
 
         final Command<Commands.Create> createCommand = new Command<Commands.Create>(
                 new Commands.Create(), todoState.getParticipants()
@@ -69,13 +69,6 @@ public class TodoCreate extends FlowLogic<SignedTransaction> {
 
         builder.verify(getServiceHub());
         final SignedTransaction ptx = getServiceHub().signInitialTransaction(builder);
-
-
-//        if (assignedToIdentity != me) {
-////            FlowSession flowSession = initiateFlow(assignedToIdentity);
-////            SignedTransaction stx = subFlow(new CollectSignaturesFlow(ptx, session));
-////        }
-
 
         return subFlow(new FinalityFlow(ptx, Arrays.asList()));
     }

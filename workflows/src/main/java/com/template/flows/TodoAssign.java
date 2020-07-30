@@ -29,12 +29,14 @@ import java.util.stream.Collectors;
 public class TodoAssign extends FlowLogic<SignedTransaction> {
     private final String linearIdString;
     private final String assignedTo;
+    private final String deadlineDate;
 
     private final ProgressTracker progressTracker = new ProgressTracker();
 
-    public TodoAssign(String linearId, String assignedTo) {
+    public TodoAssign(String linearId, String assignedTo, String deadlineDate) {
         this.linearIdString = linearId;
         this.assignedTo = assignedTo;
+        this.deadlineDate = deadlineDate;
     }
 
     @Override
@@ -51,17 +53,15 @@ public class TodoAssign extends FlowLogic<SignedTransaction> {
         Set<Party> identities = getServiceHub().getIdentityService().partiesFromName(assignedTo, false);
         Party assignedToIdentity = (Party)identities.toArray()[0];
 
-//        UniqueIdentifier linearId = new UniqueIdentifier(linearIdString);
         UUID linearId = UUID.fromString(linearIdString);
 
         QueryCriteria queryCriteria = new QueryCriteria.LinearStateQueryCriteria(null, Arrays.asList(linearId));
 
-        // 2. Get a reference to the inputState data that we are going to settle.
         Vault.Page results = getServiceHub().getVaultService().queryBy(TodoState.class, queryCriteria);
         StateAndRef inputStateAndRefToTransfer = (StateAndRef) results.getStates().get(0);
         TodoState existingState = (TodoState) inputStateAndRefToTransfer.getState().getData();
 
-        TodoState todoState = existingState.withNewAssignedTo(assignedToIdentity);
+        TodoState todoState = existingState.withNewAssignedToAndDeadline(assignedToIdentity, deadlineDate);
 
         final Command<Commands.Assign> assignCommand = new Command<Commands.Assign>(
                 new Commands.Assign(), todoState.getParticipants()
@@ -79,7 +79,6 @@ public class TodoAssign extends FlowLogic<SignedTransaction> {
 
         FlowSession flowSession = initiateFlow(assignedToIdentity);
         SignedTransaction stx = subFlow(new CollectSignaturesFlow(ptx, Arrays.asList(flowSession)));
-
 
         return subFlow(new FinalityFlow(stx, Arrays.asList(flowSession)));
     }
